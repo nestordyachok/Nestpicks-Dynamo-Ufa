@@ -145,6 +145,30 @@ main{padding-block:16px 40px;display:flex;flex-direction:column;gap:14px}
 .sy-pt small{display:block;font-family:var(--f-body);font-size:22px;font-weight:700;letter-spacing:.08em;color:#97A1B3}
 .sy-more{font-size:30px;color:#97A1B3;text-align:center;margin-top:6px}
 .sy-wait{display:inline-block;margin-top:20px;font-size:30px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:#C2372E;color:#fff;border-radius:999px;padding:8px 24px;align-self:flex-start}
+
+/* squad admin sheet */
+.mng{width:100%;height:44px;border-radius:12px;border:1px dashed var(--line);background:transparent;color:var(--muted);font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px}
+.mng svg{width:18px;height:18px}
+.sheet-bg{position:fixed;inset:0;z-index:15;background:rgba(5,8,12,.6);display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--panel);color:var(--ink);width:100%;max-width:640px;max-height:88vh;border-radius:18px 18px 0 0;display:flex;flex-direction:column;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -8px 30px rgba(0,0,0,.3)}
+.sheet-h{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+.sheet-h h2{margin:0;font-family:var(--f-display);font-weight:800;font-size:24px;text-transform:uppercase;letter-spacing:.02em}
+.sheet .hint{margin:0 0 10px;color:var(--muted);font-size:14px}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.field label{font-size:13px;font-weight:600;color:var(--muted)}
+.field input,.search{height:44px;border-radius:10px;border:1px solid var(--line);background:var(--panel-2);color:var(--ink);font:inherit;font-size:16px;padding:0 12px;width:100%}
+.field input:focus,.search:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+.msg{margin:0 0 10px;font-size:14px;color:var(--bad)}
+.who-l{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;color:var(--muted);margin-bottom:10px}
+.link{border:0;background:none;color:var(--accent);font-weight:700;padding:4px 0}
+.adm-list{overflow:auto;flex:1;min-height:120px;margin-top:4px;-webkit-overflow-scrolling:touch}
+.adm-sec{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:12px 0 4px}
+.adm-r{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.adm-r .av{width:40px;height:40px}
+.adm-r .n{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tbtn{height:34px;min-width:92px;border-radius:9px;padding:0 12px;font-weight:700;font-size:14px;border:1px solid var(--line);background:var(--panel-2);color:var(--ink)}
+.tbtn.add{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.tbtn:disabled{opacity:.5}
 .sy-foot{margin-top:auto;text-align:center;font-family:var(--f-display);font-weight:800;font-size:56px;text-transform:uppercase;letter-spacing:.03em;color:#F3AE47}
 </style>
 </head>
@@ -162,6 +186,7 @@ main{padding-block:16px 40px;display:flex;flex-direction:column;gap:14px}
   <div class="nav"><button id="prev" aria-label="Previous">‹</button><div class="nav-l"><b id="navB"></b><small id="navS"></small></div><button id="next" aria-label="Next">›</button></div>
 </div></header>
 <main class="wrap" id="main"></main>
+<div class="sheet-bg" id="adm" hidden><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="admT"><div class="sheet-h"><h2 id="admT"></h2><button class="icon-btn" id="admClose" aria-label="Close">✕</button></div><div id="admBody" style="display:flex;flex-direction:column;min-height:0;flex:1"></div></div></div>
 <div class="shot" id="shot" hidden><img id="shotImg" alt=""><p id="shotMsg" hidden></p><div class="acts"><button class="btn" id="shotSave" disabled></button><button class="btn ghost" id="shotClose"></button></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 <script>
@@ -195,22 +220,22 @@ en:{squad:'Squad standings',members:n=>n===1?'1 member':n+' members',day:'Day',w
   noPicks:'No picks',hidden:'Picks open at tip-off',noneYet:'No one in the squad has picks for this day yet.',
   emptyPeriod:'No finished days in this period yet.',startsOn:d=>'Squad standings start on '+d+'.',beforeStart:'Before the squad start',
   loading:'Loading…',loadingRes:'Loading results…',err:'Could not load the squad. Check the connection.',retry:'Try again',
-  noMembers:'No one is in this squad yet.',noMembersTxt:'Add the squad name to players in Supabase → players → squad.',
+  noMembers:'No one is in this squad yet.',noMembersTxt:'Add players with the “Manage squad” button below.',
   save:'Save picture',making:'Making…',close:'Close',saved:'Saved to your downloads.',cantSave:'Could not save. Press and hold the picture instead.',
   rules:'3 points: winner and top scorer both right. 1 point: one of them. Equal points: more 3-pointers ranks higher. Week, month and all-time count finished days only.',
   open:'Open NestPicks',dayWin:'Day win',since:d=>'Since '+d,live:'LIVE',standings:'Standings',dayBoard:'Day results',andMore:n=>'+ '+n+' more',
-  theme:'Switch theme',tagline:'Prove your ball knowledge',scorer:'top scorer'},
+  theme:'Switch theme',manage:'Manage squad',adminTitle:'Squad members',adminTxt:'Sign in with your NestPicks name and PIN. Only squad admins can change the list.',name:'Name',pin:'PIN',signIn:'Sign in',signOut:'Sign out',signedAs:n=>'Signed in as '+n,search:'Search players',add:'Add',remove:'Remove',inSquad:'In the squad',others:'Other players',notAllowed:'This account is not an admin of this squad.',wrongPin:'Wrong name or PIN.',noMatch:'No players with that name.',needAcc:'A player shows up here after they sign in to NestPicks at least once.',dbOld:'Run the latest supabase-squad.sql in Supabase first.',needFields:'Enter your name and 4-digit PIN.',tagline:'Prove your ball knowledge',scorer:'top scorer'},
 ru:{squad:'Командный зачёт',members:n=>n+' '+pl(n,'участник','участника','участников'),day:'День',week:'Неделя',month:'Месяц',all:'Всё время',today:'Сегодня',yesterday:'Вчера',
   pts:'очк.',threes:n=>n+' '+pl(n,'трёхочковый','трёхочковых','трёхочковых'),wins:n=>n+' '+pl(n,'победа дня','победы дня','побед дня'),days:n=>n+' '+pl(n,'день','дня','дней'),
   inProgress:'Игры ещё идут',notCounted:'Сегодняшние игры ещё идут. Очки добавятся, когда закончится последняя игра дня.',
   noPicks:'Нет прогнозов',hidden:'Прогнозы откроются после начала игр',noneYet:'В команде пока никто не сделал прогнозы на этот день.',
   emptyPeriod:'В этом периоде пока нет завершённых дней.',startsOn:d=>'Командный зачёт стартует '+d+'.',beforeStart:'До старта зачёта',
   loading:'Загрузка…',loadingRes:'Загружаем результаты…',err:'Не удалось загрузить команду. Проверьте интернет.',retry:'Ещё раз',
-  noMembers:'В команде пока никого нет.',noMembersTxt:'Впишите название команды игрокам в Supabase → players → squad.',
+  noMembers:'В команде пока никого нет.',noMembersTxt:'Добавьте игроков кнопкой «Управлять командой» ниже.',
   save:'Сохранить картинку',making:'Создаём…',close:'Закрыть',saved:'Сохранено в загрузки.',cantSave:'Не получилось сохранить. Нажмите и удерживайте картинку.',
   rules:'3 очка: угаданы и победитель, и самый результативный игрок. 1 очко: что-то одно. Поровну очков — выше тот, у кого больше трёхочковых. В неделе, месяце и за всё время считаются только завершённые дни.',
   open:'Открыть NestPicks',dayWin:'Победа дня',since:d=>'С '+d,live:'LIVE',standings:'Таблица',dayBoard:'Итоги дня',andMore:n=>'+ ещё '+n,
-  theme:'Сменить тему',tagline:'Докажи, что шаришь в баскетболе',scorer:'самый результативный'}};
+  theme:'Сменить тему',manage:'Управлять командой',adminTitle:'Состав команды',adminTxt:'Войдите с именем и PIN из NestPicks. Менять состав могут только администраторы команды.',name:'Имя',pin:'PIN',signIn:'Войти',signOut:'Выйти',signedAs:n=>'Вы вошли как '+n,search:'Поиск игроков',add:'Добавить',remove:'Убрать',inSquad:'В команде',others:'Остальные игроки',notAllowed:'Этот аккаунт не администратор этой команды.',wrongPin:'Неверное имя или PIN.',noMatch:'Нет игроков с таким именем.',needAcc:'Игрок появится здесь, после того как хотя бы раз войдёт в NestPicks.',dbOld:'Сначала запустите новый supabase-squad.sql в Supabase.',needFields:'Введите имя и PIN из 4 цифр.',tagline:'Докажи, что шаришь в баскетболе',scorer:'самый результативный'}};
 function pl(n,a,b,c){const m=n%10,h=n%100;return m===1&&h!==11?a:m>=2&&m<=4&&(h<12||h>14)?b:c;}
 function t(k,...a){const v=TX[L()][k];return typeof v==='function'?v(...a):v;}
 function squadName(){const s=SQUAD_NAMES[SQUAD];if(s)return s[L()];return SQUAD.replace(/[-_]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());}
@@ -356,6 +381,7 @@ const isStar=k=>STARS.includes(k);
 function avatarHTML(p){return `<span class="av">${PHOTOS[p.key]?`<img src="${PHOTOS[p.key]}" alt="">`:birdSVG(birdKind(p))}</span>`;}
 function nameHTML(p){return `<span class="n${isStar(p.key)?' gold':''}">${esc(p.name)}</span>`;}
 const ICON_SUN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>';
+const ICON_GEAR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.7-3.8 3.3-5.8 6.5-5.8s5.8 2 6.5 5.8"/><path d="M18 8v6M15 11h6"/></svg>';
 const ICON_MOON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>';
 
 /* ---------- theme ---------- */
@@ -444,7 +470,7 @@ function render(){
     h+=view==='day'?dayView():periodView();
     h+=`<button class="btn" data-act="save"${canSave()?'':' disabled'}>${esc(t('save'))}</button>`;
   }
-  h+=`<p class="rules">${esc(t('rules'))}</p>`;
+  h+=`<p class="rules">${esc(t('rules'))}</p><button class="mng" data-act="manage">${ICON_GEAR}${esc(t('manage'))}</button>`;
   $('main').innerHTML=h;
 }
 
@@ -502,17 +528,81 @@ function step(dir){
   openRows.clear();render();loadResults();
 }
 document.addEventListener('click',e=>{
-  const lg=e.target.closest('[data-lang]');if(lg){P.lang=lg.dataset.lang;savePrefs();render();return;}
+  const lg=e.target.closest('[data-lang]');if(lg){P.lang=lg.dataset.lang;savePrefs();render();if(!$('adm').hidden)renderAdm();return;}
   const v=e.target.closest('[data-v]');if(v){view=v.dataset.v;P.view=view;savePrefs();openRows.clear();render();loadResults();return;}
   const row=e.target.closest('[data-row]');if(row&&!row.disabled){const k=row.dataset.row;openRows.has(k)?openRows.delete(k):openRows.add(k);render();return;}
   const a=e.target.closest('[data-act]');if(!a)return;
   if(a.dataset.act==='retry'){sq.err='';render();loadSquad();}
   if(a.dataset.act==='save')makeStory(a);
+  if(a.dataset.act==='manage')admOpen();
 });
 $('prev').onclick=()=>step(-1);$('next').onclick=()=>step(1);
 $('themeBtn').onclick=()=>{P.theme=darkNow()?'light':'dark';savePrefs();applyTheme();};
 $('shotClose').onclick=()=>{$('shot').hidden=true;};
 $('shotSave').onclick=saveShot;
+
+/* ---------- squad admin ---------- */
+let adm={players:null,err:'',busy:false,q:'',pend:new Set()};
+function admErr(e){const m=String((e&&e.message)||e||'');
+  if(/wrong name|wrong pin/i.test(m))return t('wrongPin');
+  if(/not a squad admin/i.test(m))return t('notAllowed');
+  if(/could not find the function|does not exist|schema cache/i.test(m))return t('dbOld');
+  if(/failed to fetch|networkerror|load failed/i.test(m))return t('err');
+  return m;}
+function admOpen(){$('adm').hidden=false;document.body.style.overflow='hidden';adm.err='';renderAdm();if(P.admin&&!adm.players)admLoad();}
+function admClose(){$('adm').hidden=true;document.body.style.overflow='';}
+async function admLoad(){
+  adm.busy=true;adm.err='';renderAdm();
+  try{adm.players=await rpc('cp_squad_players',{p_name:P.admin.name,p_pin:P.admin.pin,p_squad:SQUAD})||[];}
+  catch(e){adm.err=admErr(e);if(/wrong name|not a squad admin/i.test(e.message||'')){P.admin=null;savePrefs();}}
+  adm.busy=false;renderAdm();
+}
+function renderAdm(){
+  $('admT').textContent=t('adminTitle');$('admClose').setAttribute('aria-label',t('close'));
+  const b=$('admBody');
+  if(!P.admin){
+    b.innerHTML=`<form id="admForm" novalidate><p class="hint">${esc(t('adminTxt'))}</p>
+      <div class="field"><label for="admName">${esc(t('name'))}</label><input id="admName" autocomplete="username" autocapitalize="words" autocorrect="off" spellcheck="false" maxlength="24"></div>
+      <div class="field"><label for="admPin">${esc(t('pin'))}</label><input id="admPin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="current-password"></div>
+      ${adm.err?`<p class="msg">${esc(adm.err)}</p>`:''}<button class="btn" type="submit"${adm.busy?' disabled':''}>${esc(adm.busy?t('loading'):t('signIn'))}</button></form>`;
+    return;}
+  if(!adm.players){b.innerHTML=adm.err?`<p class="msg">${esc(adm.err)}</p><button class="btn" data-adm="retry">${esc(t('retry'))}</button>`:`<p class="hint">${esc(t('loading'))}</p>`;return;}
+  b.innerHTML=`<div class="who-l"><span>${esc(t('signedAs',P.admin.name))}</span><button class="link" data-adm="out">${esc(t('signOut'))}</button></div>
+    <input class="search" id="admQ" type="search" placeholder="${esc(t('search'))}" aria-label="${esc(t('search'))}" value="${esc(adm.q)}" autocomplete="off">
+    ${adm.err?`<p class="msg" style="margin-top:8px">${esc(adm.err)}</p>`:''}<div class="adm-list" id="admList"></div>`;
+  renderAdmList();
+}
+function renderAdmList(){
+  const el=$('admList');if(!el)return;const q=adm.q.trim().toLowerCase();
+  const list=adm.players.filter(p=>!q||p.name.toLowerCase().includes(q));
+  const row=p=>`<div class="adm-r">${avatarHTML(p)}<span class="n">${nameHTML(p)}</span><button class="tbtn${p.in?'':' add'}" data-tog="${esc(p.key)}"${adm.pend.has(p.key)?' disabled':''}>${esc(p.in?t('remove'):'+ '+t('add'))}</button></div>`;
+  const ins=list.filter(p=>p.in),outs=list.filter(p=>!p.in);
+  el.innerHTML=(list.length?'':`<p class="hint" style="padding-top:10px">${esc(t('noMatch'))}</p>`)
+    +(ins.length?`<div class="adm-sec">${esc(t('inSquad'))} · ${ins.length}</div>${ins.map(row).join('')}`:'')
+    +(outs.length?`<div class="adm-sec">${esc(t('others'))}</div>${outs.map(row).join('')}`:'')
+    +`<p class="hint" style="padding-top:12px">${esc(t('needAcc'))}</p>`;
+}
+async function admToggle(key){
+  const p=adm.players.find(x=>x.key===key);if(!p||adm.pend.has(key))return;
+  adm.pend.add(key);adm.err='';renderAdmList();
+  try{await rpc('cp_squad_set',{p_name:P.admin.name,p_pin:P.admin.pin,p_squad:SQUAD,p_player:key,p_in:!p.in});p.in=!p.in;}
+  catch(e){adm.err=admErr(e);adm.pend.delete(key);renderAdm();return;}
+  adm.pend.delete(key);renderAdmList();loadSquad();
+}
+document.addEventListener('submit',e=>{if(e.target.id!=='admForm')return;e.preventDefault();
+  const name=$('admName').value.trim(),pin=$('admPin').value.trim();
+  if(name.length<2||!/^\d{4}$/.test(pin)){adm.err=t('needFields');renderAdm();$('admName').value=name;return;}
+  P.admin={name,pin};savePrefs();adm.players=null;admLoad();});
+document.addEventListener('input',e=>{if(e.target.id==='admQ'){adm.q=e.target.value;renderAdmList();}});
+$('adm').addEventListener('click',e=>{
+  if(e.target===$('adm')){admClose();return;}
+  const tg=e.target.closest('[data-tog]');if(tg){admToggle(tg.dataset.tog);return;}
+  const a=e.target.closest('[data-adm]');if(!a)return;
+  if(a.dataset.adm==='out'){P.admin=null;savePrefs();adm.players=null;adm.q='';adm.err='';renderAdm();}
+  if(a.dataset.adm==='retry')admLoad();});
+$('admClose').onclick=admClose;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('adm').hidden)admClose();});
+
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-sq.at>60e3)loadSquad();});
 
